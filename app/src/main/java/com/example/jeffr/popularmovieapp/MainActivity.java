@@ -16,8 +16,7 @@ import com.example.jeffr.popularmovieapp.Adapters.SectionsPagerAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
-    public final String API_KEY = getApplicationContext().getString(R.string.THE_MOVIE_DB_API_TOKEN);
-
+    private final String API_KEY = getApplicationContext().getString(R.string.THE_MOVIE_DB_API_TOKEN);
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
     private ViewPager mViewPager;

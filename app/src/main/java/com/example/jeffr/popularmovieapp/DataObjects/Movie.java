@@ -1,52 +1,52 @@
 package com.example.jeffr.popularmovieapp.DataObjects;
-//title, release date, movie poster, vote average, and plot synopsis.
 public class Movie {
-    private String title;
-    private String releaseDate;
-    private int moviePoster;
-    private double voteAverage;
-    private String synopsis;
+    private String original_title;
+    private String release_date;
+    private String poster_path;
+    private double vote_average;
+    private String overview;
 
-    public String getTitle() {
-        return title;
+    public String getOverview() {
+        return overview;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setOverview(String overview) {
+        this.overview = overview;
     }
 
-    public String getSynopsis() {
-        return synopsis;
+    public double getVote_average() {
+
+        return vote_average;
     }
 
-    public void setSynopsis(String synopsis) {
-        this.synopsis = synopsis;
+    public void setVote_average(double vote_average) {
+        this.vote_average = vote_average;
     }
 
-    public double getVoteAverage() {
+    public String getPoster_path() {
 
-        return voteAverage;
+        return poster_path;
     }
 
-    public void setVoteAverage(double voteAverage) {
-        this.voteAverage = voteAverage;
+    public void setPoster_path(String poster_path) {
+        this.poster_path = poster_path;
     }
 
-    public int getMoviePoster() {
+    public String getRelease_date() {
 
-        return moviePoster;
+        return release_date;
     }
 
-    public void setMoviePoster(int moviePoster) {
-        this.moviePoster = moviePoster;
+    public void setRelease_date(String release_date) {
+        this.release_date = release_date;
     }
 
-    public String getReleaseDate() {
+    public String getOriginal_title() {
 
-        return releaseDate;
+        return original_title;
     }
 
-    public void setReleaseDate(String releaseDate) {
-        this.releaseDate = releaseDate;
+    public void setOriginal_title(String original_title) {
+        this.original_title = original_title;
     }
 }
