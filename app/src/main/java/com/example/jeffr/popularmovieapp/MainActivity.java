@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
-
+import com.example.jeffr.popularmovieapp.Adapters.RecyclerViewOnClick;
 import com.example.jeffr.popularmovieapp.Adapters.SectionsPagerAdapter;
 
 
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public static class PlaceholderFragment extends Fragment {
+    public static class PlaceholderFragment extends Fragment implements RecyclerViewOnClick{
 
         private static final String ARG_SECTION_NUMBER = "section_number";
 
@@ -59,6 +59,11 @@ public class MainActivity extends AppCompatActivity {
 
 
             return rootView;
+        }
+
+        @Override
+        public void rowSelected(int row) {
+            
         }
     }
 
