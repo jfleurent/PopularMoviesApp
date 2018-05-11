@@ -15,7 +15,7 @@ import static android.content.ContentValues.TAG;
 public class NetworkUtils {
     private final static String TOP_RATED = "https://api.themoviedb.org/3/movie/top_rated?api_key=";
     private static final String POPULAR = "https://api.themoviedb.org/3/movie/popular?api_key=";
-    private final static String LANGUAGE_PAGES = "&language=en-US&page=5";
+    private final static String LANGUAGE_PAGES = "&language=en-US&page=1";
 
 
     public static URL buildTopRatedMoviesUrl(String api_key) {

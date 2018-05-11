@@ -14,16 +14,15 @@ import java.util.List;
 
 public class JsonUtils {
 
-    public static List<Movie> getMoviesList(Context context, String jsonResponse){
+    public static List<Movie> getMoviesList(String jsonResponse){
         try{
             ObjectMapper objectMapper = new ObjectMapper();
             TypeFactory typeFactory = objectMapper.getTypeFactory();
             JSONObject jsonObject = new JSONObject(jsonResponse);
 
-            return objectMapper.readValue(jsonObject.getJSONArray("results").toString(),typeFactory.constructCollectionType(List.class, Movie.class));
+            return objectMapper.readValue(jsonObject.getJSONArray("results")
+                    .toString(),typeFactory.constructCollectionType(List.class, Movie.class));
         }catch (Exception e){
-            e.printStackTrace();
-            System.exit(0);
             return null;
         }
 

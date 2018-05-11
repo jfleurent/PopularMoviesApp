@@ -7,6 +7,7 @@
     <string name="movie_title">Title:</string>
     <string name="movie_date">Release Date:</string>
     <string name="movie_overview">Overview:</string>
+    <string name="movie_votes">Average Votes</string>
 
     <string name="popular_movies">Popular Movies</string>
     <string name="top_rated_movies">Top Rated Movies</string>

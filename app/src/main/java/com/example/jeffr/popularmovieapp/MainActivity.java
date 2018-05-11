@@ -1,5 +1,6 @@
 package com.example.jeffr.popularmovieapp;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentActivity;
@@ -44,12 +45,11 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.tabs)
     TabLayout tabLayout;
 
-    @BindView(R.id.toolbar)
+    @BindView(R.id.toolbar2)
     Toolbar toolbar;
 
     private String API_KEY;
     private SectionsPagerAdapter mSectionsPagerAdapter;
-
 
 
     @Override
@@ -58,15 +58,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
-      getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.cardview_dark_background));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.black));
         API_KEY = getString(R.string.THE_MOVIE_DB_API_TOKEN);
-        new FetchMovies().execute();
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.addOnPageChangeListener(new MyPageChangeListener());
+        tabLayout.addOnTabSelectedListener(new MyTabAdapter());
+        new FetchMovies().execute();
 
     }
 
-    public class FetchMovies extends AsyncTask<Boolean, Void, List<Movie>>{
+    public class FetchMovies extends AsyncTask<String, Void, List<List<Movie>>> {
 
         @Override
         protected void onPreExecute() {
@@ -75,38 +77,53 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected List<Movie> doInBackground(Boolean... booleans) {
-            List<Movie> movieList = new ArrayList<>();
+        protected List<List<Movie>> doInBackground(String... strings) {
+            List<Movie> movieList;
+            List<List<Movie>> movieLists = new ArrayList<>();
             URL movieUrl = NetworkUtils.buildPopularMoviesUrl(API_KEY);
+            URL movieUrl2 = NetworkUtils.buildTopRatedMoviesUrl(API_KEY);
             try {
+
                 String jsonResponse = NetworkUtils
                         .getResponseFromHttpUrl(movieUrl);
-                movieList = JsonUtils.getMoviesList(MainActivity.this,jsonResponse);
-            }
-            catch (Exception e){
+
+                movieList = JsonUtils.getMoviesList(jsonResponse);
+
+                movieLists.add(movieList);
+
+                String jsonResponse2 = NetworkUtils
+                        .getResponseFromHttpUrl(movieUrl2);
+
+                movieList = JsonUtils.getMoviesList(jsonResponse2);
+
+                movieLists.add(movieList);
+
+                PlaceholderFragment.movieLists = movieLists;
+
+            } catch (Exception e) {
 
             }
-            PlaceholderFragment.movieList = movieList;
-            return movieList;
+
+            return movieLists;
         }
 
         @Override
-        protected void onPostExecute(List<Movie> movies) {
-            PlaceholderFragment.movieList = movies;
+        protected void onPostExecute(List<List<Movie>> movies) {
             progressBar.setVisibility(View.INVISIBLE);
             mViewPager.setVisibility(View.VISIBLE);
         }
     }
 
 
-    public static class PlaceholderFragment extends Fragment implements RecyclerViewOnClick{
+    public static class PlaceholderFragment extends Fragment implements RecyclerViewOnClick {
 
         private static final String ARG_SECTION_NUMBER = "section_number";
 
         @BindView(R.id.recyclerview)
         RecyclerView recyclerView;
 
-        public static List<Movie> movieList;
+        static int sectionNumber = 0;
+        public static List<List<Movie>> movieLists;
 
         public PlaceholderFragment() {
         }
@@ -123,28 +140,73 @@ public class MainActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            ButterKnife.bind(this,rootView);
+            ButterKnife.bind(this, rootView);
             final FragmentActivity fragmentActivity = getActivity();
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(fragmentActivity);
             recyclerView.setLayoutManager(linearLayoutManager);
             recyclerView.setItemAnimator(new DefaultItemAnimator());
-            if(movieList == null){
+            if (movieLists == null) {
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            recyclerView.setAdapter(new RecyclerviewAdapter(movieList,this));
+
+            recyclerView.setAdapter(new RecyclerviewAdapter(movieLists.get(getArguments()
+                    .getInt(ARG_SECTION_NUMBER)), this));
 
             return rootView;
         }
 
         @Override
         public void rowSelected(int row) {
+            Movie selectedMovie = movieLists.get(sectionNumber).get(row);
+            Intent intent = new Intent(getActivity(), DetailedMovieActivity.class);
+            intent.putExtra("Title",selectedMovie.getOriginal_title());
+            intent.putExtra("Overview",selectedMovie.getOverview());
+            intent.putExtra("PosterPath",selectedMovie.getPoster_path());
+            intent.putExtra("Date",selectedMovie.getRelease_date());
+            intent.putExtra("Votes",selectedMovie.getVote_average());
+            startActivity(intent);
+        }
+    }
+
+    class MyTabAdapter implements TabLayout.OnTabSelectedListener {
+        @Override
+        public void onTabSelected(TabLayout.Tab tab) {
+            mViewPager.setCurrentItem(tab.getPosition());
+            if (tab.equals(tabLayout.getTabAt(0))) {
+                PlaceholderFragment.sectionNumber = 0;
+            } else {
+                PlaceholderFragment.sectionNumber = 1;
+            }
+        }
+
+        @Override
+        public void onTabUnselected(TabLayout.Tab tab) {
+
+        }
+
+        @Override
+        public void onTabReselected(TabLayout.Tab tab) {
 
         }
     }
 
+    public class MyPageChangeListener implements ViewPager.OnPageChangeListener {
+        @Override
+        public void onPageScrolled(int i, float v, int i1) {
+        }
+
+        @Override
+        public void onPageSelected(int i) {
+            tabLayout.getTabAt(i).select();
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int i) {
+        }
+    }
 
 }

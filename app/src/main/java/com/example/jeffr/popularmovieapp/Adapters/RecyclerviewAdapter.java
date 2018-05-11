@@ -40,13 +40,19 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
     }
 
     @Override
-    public void onBindViewHolder(RecyclerViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerViewHolder holder, final int position) {
             holder.movieDate.setText(movieList.get(position).getRelease_date());
             holder.movieOverview.setText(movieList.get(position).getOverview());
             holder.movieTitle.setText(movieList.get(position).getOriginal_title());
             Picasso.with(parent.getContext())
                 .load("https://image.tmdb.org/t/p/w500/"+movieList.get(position).getPoster_path())
                 .into(holder.moviePoster);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                recyclerViewOnClick.rowSelected(position);
+            }
+        });
     }
 
     @Override
