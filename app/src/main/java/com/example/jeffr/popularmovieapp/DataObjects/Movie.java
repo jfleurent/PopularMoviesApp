@@ -1,9 +1,13 @@
 package com.example.jeffr.popularmovieapp.DataObjects;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Movie {
     private String original_title;
     private String release_date;
     private String poster_path;
-    private double vote_average;
+    private float vote_average;
     private String overview;
 
     public String getOverview() {
@@ -14,12 +18,12 @@ public class Movie {
         this.overview = overview;
     }
 
-    public double getVote_average() {
+    public float getVote_average() {
 
         return vote_average;
     }
 
-    public void setVote_average(double vote_average) {
+    public void setVote_average(float vote_average) {
         this.vote_average = vote_average;
     }
 

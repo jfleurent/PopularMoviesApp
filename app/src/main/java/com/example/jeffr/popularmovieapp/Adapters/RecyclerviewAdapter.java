@@ -41,11 +41,11 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
 
     @Override
     public void onBindViewHolder(RecyclerViewHolder holder, int position) {
-            holder.movieDate.append(movieList.get(position).getRelease_date());
-            holder.movieOverview.append(movieList.get(position).getOverview());
-            holder.movieTitle.append(movieList.get(position).getOriginal_title());
+            holder.movieDate.setText(movieList.get(position).getRelease_date());
+            holder.movieOverview.setText(movieList.get(position).getOverview());
+            holder.movieTitle.setText(movieList.get(position).getOriginal_title());
             Picasso.with(parent.getContext())
-                .load("https://image.tmdb.org/t/p/w100/"+movieList.get(position).getPoster_path())
+                .load("https://image.tmdb.org/t/p/w500/"+movieList.get(position).getPoster_path())
                 .into(holder.moviePoster);
     }
 
