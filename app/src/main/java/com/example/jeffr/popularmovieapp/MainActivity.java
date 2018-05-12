@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -153,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             ButterKnife.bind(this, rootView);
             final FragmentActivity fragmentActivity = getActivity();
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(fragmentActivity);
+            GridLayoutManager linearLayoutManager = new GridLayoutManager(fragmentActivity,2);
             recyclerView.setLayoutManager(linearLayoutManager);
             recyclerView.setItemAnimator(new DefaultItemAnimator());
             recyclerView.setAdapter(new RecyclerviewAdapter(this));
@@ -165,11 +166,6 @@ public class MainActivity extends AppCompatActivity {
             Movie selectedMovie = movieLists.get(sectionNumber).get(row);
             Intent intent = new Intent(getActivity(), DetailedMovieActivity.class);
             intent.putExtra("Movie",selectedMovie);
-//            intent.putExtra("Title",selectedMovie.getOriginal_title());
-//            intent.putExtra("Overview",selectedMovie.getOverview());
-//            intent.putExtra("PosterPath",selectedMovie.getPoster_path());
-//            intent.putExtra("Date",selectedMovie.getRelease_date());
-//            intent.putExtra("Votes",selectedMovie.getVote_average());
             startActivity(intent);
         }
     }
