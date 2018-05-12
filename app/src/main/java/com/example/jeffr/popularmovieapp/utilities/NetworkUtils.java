@@ -1,6 +1,5 @@
-package com.example.jeffr.popularmovieapp.Utilities;
+package com.example.jeffr.popularmovieapp.utilities;
 
-import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
@@ -52,6 +51,8 @@ public class NetworkUtils {
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {
+            urlConnection.setConnectTimeout(5000);
+            urlConnection.setReadTimeout(10000);
             InputStream in = urlConnection.getInputStream();
 
             Scanner scanner = new Scanner(in);

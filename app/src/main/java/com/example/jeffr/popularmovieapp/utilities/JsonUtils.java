@@ -1,15 +1,11 @@
-package com.example.jeffr.popularmovieapp.Utilities;
+package com.example.jeffr.popularmovieapp.utilities;
 
-import android.content.Context;
-
-import com.example.jeffr.popularmovieapp.DataObjects.Movie;
-import com.example.jeffr.popularmovieapp.DataObjects.MovieResultsDataHolder;
+import com.example.jeffr.popularmovieapp.dataobjects.Movie;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.List;
 
 public class JsonUtils {

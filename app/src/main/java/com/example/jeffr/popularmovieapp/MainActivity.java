@@ -19,12 +19,12 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 
-import com.example.jeffr.popularmovieapp.Adapters.RecyclerViewOnClick;
-import com.example.jeffr.popularmovieapp.Adapters.RecyclerviewAdapter;
-import com.example.jeffr.popularmovieapp.Adapters.SectionsPagerAdapter;
-import com.example.jeffr.popularmovieapp.DataObjects.Movie;
-import com.example.jeffr.popularmovieapp.Utilities.JsonUtils;
-import com.example.jeffr.popularmovieapp.Utilities.NetworkUtils;
+import com.example.jeffr.popularmovieapp.adapters.RecyclerViewOnClick;
+import com.example.jeffr.popularmovieapp.adapters.RecyclerviewAdapter;
+import com.example.jeffr.popularmovieapp.adapters.SectionsPagerAdapter;
+import com.example.jeffr.popularmovieapp.dataobjects.Movie;
+import com.example.jeffr.popularmovieapp.utilities.JsonUtils;
+import com.example.jeffr.popularmovieapp.utilities.NetworkUtils;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.black));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.bg_color_status));
         API_KEY = getString(R.string.THE_MOVIE_DB_API_TOKEN);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
                 movieLists.add(movieList);
 
-                PlaceholderFragment.movieLists = movieLists;
+
 
             } catch (Exception e) {
 
@@ -111,6 +111,9 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(List<List<Movie>> movies) {
             progressBar.setVisibility(View.INVISIBLE);
             mViewPager.setVisibility(View.VISIBLE);
+            PlaceholderFragment.movieLists = movies;
+            PlaceholderFragment.fragments.get(0).resetRecyclerview();
+            PlaceholderFragment.fragments.get(1).resetRecyclerview();
         }
     }
 
@@ -122,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
         @BindView(R.id.recyclerview)
         RecyclerView recyclerView;
 
+        public static List<PlaceholderFragment> fragments = new ArrayList<>();
         static int sectionNumber = 0;
         public static List<List<Movie>> movieLists;
 
@@ -136,6 +140,13 @@ public class MainActivity extends AppCompatActivity {
             return fragment;
         }
 
+        public void resetRecyclerview(){
+            RecyclerviewAdapter recyclerviewAdapter = new RecyclerviewAdapter(this);
+            recyclerviewAdapter.setMovieList(movieLists.get(getArguments().getInt(ARG_SECTION_NUMBER)));
+            recyclerView.setAdapter(recyclerviewAdapter);
+        }
+
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -145,17 +156,7 @@ public class MainActivity extends AppCompatActivity {
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(fragmentActivity);
             recyclerView.setLayoutManager(linearLayoutManager);
             recyclerView.setItemAnimator(new DefaultItemAnimator());
-            if (movieLists == null) {
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            recyclerView.setAdapter(new RecyclerviewAdapter(movieLists.get(getArguments()
-                    .getInt(ARG_SECTION_NUMBER)), this));
-
+            recyclerView.setAdapter(new RecyclerviewAdapter(this));
             return rootView;
         }
 
@@ -163,11 +164,12 @@ public class MainActivity extends AppCompatActivity {
         public void rowSelected(int row) {
             Movie selectedMovie = movieLists.get(sectionNumber).get(row);
             Intent intent = new Intent(getActivity(), DetailedMovieActivity.class);
-            intent.putExtra("Title",selectedMovie.getOriginal_title());
-            intent.putExtra("Overview",selectedMovie.getOverview());
-            intent.putExtra("PosterPath",selectedMovie.getPoster_path());
-            intent.putExtra("Date",selectedMovie.getRelease_date());
-            intent.putExtra("Votes",selectedMovie.getVote_average());
+            intent.putExtra("Movie",selectedMovie);
+//            intent.putExtra("Title",selectedMovie.getOriginal_title());
+//            intent.putExtra("Overview",selectedMovie.getOverview());
+//            intent.putExtra("PosterPath",selectedMovie.getPoster_path());
+//            intent.putExtra("Date",selectedMovie.getRelease_date());
+//            intent.putExtra("Votes",selectedMovie.getVote_average());
             startActivity(intent);
         }
     }

@@ -1,4 +1,4 @@
-package com.example.jeffr.popularmovieapp.Adapters;
+package com.example.jeffr.popularmovieapp.adapters;
 
 /**
  * Created by jeffr on 3/5/2018.

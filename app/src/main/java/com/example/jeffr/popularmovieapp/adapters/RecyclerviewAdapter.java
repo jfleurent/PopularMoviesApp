@@ -1,4 +1,4 @@
-package com.example.jeffr.popularmovieapp.Adapters;
+package com.example.jeffr.popularmovieapp.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.jeffr.popularmovieapp.DataObjects.Movie;
+import com.example.jeffr.popularmovieapp.dataobjects.Movie;
 import com.example.jeffr.popularmovieapp.R;
 import com.squareup.picasso.Picasso;
 
@@ -20,12 +20,15 @@ import butterknife.ButterKnife;
 
 public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapter.RecyclerViewHolder> {
     RecyclerViewOnClick recyclerViewOnClick;
-    List<Movie> movieList;
+    List<Movie> movieList = new ArrayList<>();
     ViewGroup parent;
 
-    public RecyclerviewAdapter(List<Movie> movieList, RecyclerViewOnClick recyclerViewOnClick){
-        this.movieList = movieList;
+    public RecyclerviewAdapter( RecyclerViewOnClick recyclerViewOnClick){
         this.recyclerViewOnClick = recyclerViewOnClick;
+    }
+
+    public void setMovieList(List<Movie> movieList){
+        this.movieList = movieList;
     }
 
     @Override

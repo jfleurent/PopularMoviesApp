@@ -4,10 +4,10 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.jeffr.popularmovieapp.dataobjects.Movie;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
@@ -40,14 +40,15 @@ public class DetailedMovieActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailed_movie);
         ButterKnife.bind(this);
+        Movie movie = getIntent().getParcelableExtra("Movie");
         Picasso.with(this)
-                .load("https://image.tmdb.org/t/p/w500/"+getIntent().getExtras().getString("PosterPath"))
+                .load("https://image.tmdb.org/t/p/w500/"+movie.getPoster_path())
                 .into(moviePoster);
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.black));
-        movieDate.setText(getIntent().getExtras().getString("Date"));
-        movieOverview.setText(getIntent().getExtras().getString("Overview"));
-        movieTitle.setText(getIntent().getExtras().getString("Title"));
-        movieVotes.setText(String.valueOf(getIntent().getExtras().getFloat("Votes")));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.bg_color_status));
+        movieDate.setText(movie.getRelease_date());
+        movieOverview.setText(movie.getOverview());
+        movieTitle.setText(movie.getOriginal_title());
+        movieVotes.setText(String.valueOf(movie.getVote_average()));
     }
 
 }

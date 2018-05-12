@@ -1,4 +1,4 @@
-package com.example.jeffr.popularmovieapp.Adapters;
+package com.example.jeffr.popularmovieapp.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,8 +14,11 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return MainActivity.PlaceholderFragment.newInstance(position);
+        MainActivity.PlaceholderFragment.fragments.add(MainActivity.PlaceholderFragment.newInstance(position));
+        return MainActivity.PlaceholderFragment.fragments.get(position);
     }
+
+
 
     @Override
     public int getCount() {
