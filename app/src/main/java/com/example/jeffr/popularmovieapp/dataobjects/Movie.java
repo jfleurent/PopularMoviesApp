@@ -12,6 +12,35 @@ public class Movie implements Parcelable {
     private String poster_path;
     private float vote_average;
     private String overview;
+    private int id;
+    private String trailerKey;
+
+    public String getTrailerKey() {
+        return trailerKey;
+    }
+
+    public void setTrailerKey(String trailerKey) {
+        this.trailerKey = trailerKey;
+    }
+
+    public boolean isFavorited() {
+        return favorited;
+    }
+
+    public void setFavorited(boolean favorited) {
+        this.favorited = favorited;
+    }
+
+    private boolean favorited;
+
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getOverview() {
         return overview;
@@ -57,6 +86,10 @@ public class Movie implements Parcelable {
         this.original_title = original_title;
     }
 
+
+    public Movie() {
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -69,9 +102,9 @@ public class Movie implements Parcelable {
         dest.writeString(this.poster_path);
         dest.writeFloat(this.vote_average);
         dest.writeString(this.overview);
-    }
-
-    public Movie() {
+        dest.writeInt(this.id);
+        dest.writeString(this.trailerKey);
+        dest.writeByte(this.favorited ? (byte) 1 : (byte) 0);
     }
 
     protected Movie(Parcel in) {
@@ -80,9 +113,12 @@ public class Movie implements Parcelable {
         this.poster_path = in.readString();
         this.vote_average = in.readFloat();
         this.overview = in.readString();
+        this.id = in.readInt();
+        this.trailerKey = in.readString();
+        this.favorited = in.readByte() != 0;
     }
 
-    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
         @Override
         public Movie createFromParcel(Parcel source) {
             return new Movie(source);

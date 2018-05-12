@@ -23,4 +23,18 @@ public class JsonUtils {
         }
 
     }
+
+    public static String getTrailerList(String jsonResponse){
+        try{
+            ObjectMapper objectMapper = new ObjectMapper();
+            TypeFactory typeFactory = objectMapper.getTypeFactory();
+            JSONObject jsonObject = new JSONObject(jsonResponse);
+
+            return objectMapper.readValue(jsonObject.getJSONArray("results")
+                    .toString(),typeFactory.constructCollectionType(List.class, Movie.class));
+        }catch (Exception e){
+            return null;
+        }
+
+    }
 }

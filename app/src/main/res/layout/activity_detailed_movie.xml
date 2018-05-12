@@ -25,10 +25,39 @@
 
         </android.support.design.widget.AppBarLayout>
 
+    <LinearLayout
+        android:id="@+id/trailer_favorite_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/trailer_favorite_layout_height"
+        android:orientation="horizontal"
+        android:layout_below="@id/appbar"
+        android:background="@color/trailer_and_favorite_bg">
+        <Button
+            android:id="@+id/trailer_button"
+            android:layout_weight="5"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/trailer"
+            android:background="@color/trailer_and_favorite_bg"
+            android:textColor="@color/trailer_button_text"
+            android:textSize="@dimen/trailer_button_text"
+            android:textAlignment="textStart"
+            android:layout_marginLeft="@dimen/trailer_button_margin"/>
+        <ImageButton
+            android:id="@+id/favorite_button"
+            android:layout_weight="1"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:srcCompat="@drawable/ic_favorite"
+            android:background="@color/trailer_and_favorite_bg"
+            />
+
+    </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/appbar"
+            android:layout_below="@+id/trailer_favorite_layout"
             android:orientation="vertical">
 
             <TextView
@@ -83,3 +112,4 @@
         </LinearLayout>
     </RelativeLayout>
 </ScrollView>
+
