@@ -7,4 +7,5 @@
     <color name="bg_color_status">#000000</color>
     <color name="trailer_and_favorite_bg">#ffffff</color>
     <color name="trailer_button_text">#000000</color>
+    <color name="comment_separator">#b9b7b7</color>
 </resources>

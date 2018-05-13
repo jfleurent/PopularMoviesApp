@@ -4,18 +4,28 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.design.widget.AppBarLayout;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.jeffr.popularmovieapp.adapters.RecyclerViewOnClick;
+import com.example.jeffr.popularmovieapp.adapters.RecyclerviewAdapter;
+import com.example.jeffr.popularmovieapp.adapters.ReviewsRecyclerViewAdapter;
 import com.example.jeffr.popularmovieapp.dataobjects.Movie;
+import com.example.jeffr.popularmovieapp.dataobjects.Review;
 import com.example.jeffr.popularmovieapp.utilities.JsonUtils;
 import com.example.jeffr.popularmovieapp.utilities.NetworkUtils;
 import com.google.android.youtube.player.YouTubeApiServiceUtil;
@@ -26,13 +36,14 @@ import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static android.content.ContentValues.TAG;
 
-public class DetailedMovieActivity extends AppCompatActivity {
+public class DetailedMovieActivity extends AppCompatActivity{
 
     @BindView(R.id.movie_poster_imageview)
     ImageView moviePoster;
@@ -61,6 +72,9 @@ public class DetailedMovieActivity extends AppCompatActivity {
     @BindView(R.id.appbar)
     AppBarLayout appBarLayout;
 
+    @BindView(R.id.reviews_recyclerview)
+    RecyclerView reviewsRecyclerView;
+
     Movie movie;
 
     private  String API_KEY;
@@ -83,6 +97,7 @@ public class DetailedMovieActivity extends AppCompatActivity {
         movieOverview.setText(movie.getOverview());
         movieTitle.setText(movie.getOriginal_title());
         movieVotes.setText(String.valueOf(movie.getVote_average()));
+        new FetchReview().execute(movie.getId());
 
         trailerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,10 +123,6 @@ public class DetailedMovieActivity extends AppCompatActivity {
     }
 
     class FetchTrailer extends AsyncTask<Integer,Void,String>{
-        @Override
-        protected void onPreExecute() {
-            progressBar.setVisibility(View.VISIBLE);
-        }
 
         @Override
         protected String doInBackground(Integer... integers) {
@@ -129,7 +140,6 @@ public class DetailedMovieActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
-            progressBar.setVisibility(View.INVISIBLE);
             movie.setTrailerKey(s);
             final YouTubeInitializationResult result = YouTubeApiServiceUtil.isYouTubeApiServiceAvailable(DetailedMovieActivity.this);
 
@@ -140,6 +150,37 @@ public class DetailedMovieActivity extends AppCompatActivity {
                 startActivity(YouTubeStandalonePlayer.createVideoIntent(DetailedMovieActivity.this,
                         API_KEY2, s, 0, true, true));
             }
+        }
+    }
+
+    class FetchReview extends AsyncTask<Integer,Void,List<Review>>{
+
+        @Override
+        protected void onPreExecute() {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected List<Review> doInBackground(Integer... integers) {
+            URL reviewsLink = NetworkUtils.buildReviewsUrl(API_KEY,integers[0]);
+            try {
+                String jsonResponse = NetworkUtils
+                        .getResponseFromHttpUrl(reviewsLink);
+                return JsonUtils.getReviewsList(jsonResponse);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(List<Review> reviews) {
+            progressBar.setVisibility(View.INVISIBLE);
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(DetailedMovieActivity.this);
+            reviewsRecyclerView.setLayoutManager(linearLayoutManager);
+            reviewsRecyclerView.setItemAnimator(new DefaultItemAnimator());
+            reviewsRecyclerView.setAdapter(new ReviewsRecyclerViewAdapter(reviews));
         }
     }
 

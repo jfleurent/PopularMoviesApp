@@ -1,6 +1,7 @@
 package com.example.jeffr.popularmovieapp.utilities;
 
 import com.example.jeffr.popularmovieapp.dataobjects.Movie;
+import com.example.jeffr.popularmovieapp.dataobjects.Review;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -22,7 +23,21 @@ public class JsonUtils {
         }catch (Exception e){
             return null;
         }
+    }
 
+    public static List<Review> getReviewsList(String jsonResponse){
+        try{
+            ObjectMapper objectMapper = new ObjectMapper();
+            TypeFactory typeFactory = objectMapper.getTypeFactory();
+            JSONObject jsonObject = new JSONObject(jsonResponse);
+            String jsonArrayString = jsonObject.getJSONArray("results")
+                    .toString();
+
+            return objectMapper.readValue(jsonObject.getJSONArray("results")
+                    .toString(),typeFactory.constructCollectionType(List.class, Review.class));
+        }catch (Exception e){
+            return null;
+        }
     }
 
     public static String getTrailerKey(String jsonResponse){
@@ -33,6 +48,5 @@ public class JsonUtils {
         }catch (Exception e){
             return null;
         }
-
     }
 }

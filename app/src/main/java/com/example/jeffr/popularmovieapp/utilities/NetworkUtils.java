@@ -15,6 +15,8 @@ public class NetworkUtils {
     private final static String TOP_RATED = "https://api.themoviedb.org/3/movie/top_rated?api_key=";
     private static final String POPULAR = "https://api.themoviedb.org/3/movie/popular?api_key=";
     private static final String VIDEO = "https://api.themoviedb.org/3/movie/";
+    private static final String REVIEW = "https://api.themoviedb.org/3/movie/";
+    private static final String REVIEW_API = "/reviews?api_key=";
     private static final String VIDEO_LANGUAGE = "&language=en-US";
     private final static String LANGUAGE_PAGES = "&language=en-US&page=1";
 
@@ -33,6 +35,22 @@ public class NetworkUtils {
 
         return url;
     }
+
+    public static URL buildReviewsUrl(String api_key,int movieID) {
+        String query = REVIEW+movieID+REVIEW_API+api_key+LANGUAGE_PAGES;
+
+        URL url = null;
+        try {
+            url = new URL(query);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        Log.v(TAG, "Built URI " + url);
+
+        return url;
+    }
+
 
     public static URL buildVideoUrl(String api_key,int id) {
         String query = VIDEO+id+"/videos?api_key="+api_key+VIDEO_LANGUAGE;
