@@ -1,6 +1,10 @@
 package com.example.jeffr.popularmovieapp;
 
+import android.animation.ObjectAnimator;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.design.widget.AppBarLayout;
@@ -19,7 +23,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.jeffr.popularmovieapp.adapters.RecyclerViewOnClick;
 import com.example.jeffr.popularmovieapp.adapters.RecyclerviewAdapter;
@@ -75,7 +81,12 @@ public class DetailedMovieActivity extends AppCompatActivity{
     @BindView(R.id.reviews_recyclerview)
     RecyclerView reviewsRecyclerView;
 
+    @BindView(R.id.movie_content_scrollview)
+    ScrollView scrollView;
+
     Movie movie;
+
+    private static final String ARG_SECTION_NUMBER = "section_number";
 
     private  String API_KEY;
     private  String API_KEY2;
@@ -97,6 +108,15 @@ public class DetailedMovieActivity extends AppCompatActivity{
         movieOverview.setText(movie.getOverview());
         movieTitle.setText(movie.getOriginal_title());
         movieVotes.setText(String.valueOf(movie.getVote_average()));
+        scrollView.smoothScrollTo(0,20);
+        scrollView.smoothScrollBy(0,20);
+        if(movie.isFavorited()){
+            favoriteButton.setImageResource(R.drawable.ic_favorite_on);
+        }
+        else{
+            favoriteButton.setImageResource(R.drawable.ic_favorite);
+        }
+
         new FetchReview().execute(movie.getId());
 
         trailerButton.setOnClickListener(new View.OnClickListener() {
@@ -109,13 +129,30 @@ public class DetailedMovieActivity extends AppCompatActivity{
         favoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!movie.isFavorited()){
+                Cursor cursor = MainActivity.PlaceholderFragment.fragments.get(getIntent().getExtras().getInt(ARG_SECTION_NUMBER)).cursor;
+                int row = getIntent().getExtras().getInt("Row");
+                cursor.moveToPosition(row);
+                if(cursor.getInt(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_FAVORITE))==0){
                     favoriteButton.setImageResource(R.drawable.ic_favorite_on);
                     movie.setFavorited(true);
+                    if(getIntent().getExtras().getInt(ARG_SECTION_NUMBER) == 0){
+                        MainActivity.popularDB.updateWithOnConflict(MovieDBContract.MovieEntry.TABLE_NAME,createContentValues(),movie.getId() +"="+ cursor.getInt(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_ID)),null, SQLiteDatabase.CONFLICT_IGNORE);
+                    }
+                    else {
+                        MainActivity.topRatedDB.updateWithOnConflict(MovieDBContract.MovieEntry.TABLE_NAME,createContentValues(),movie.getId() +"="+ cursor.getInt(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_ID)),null,SQLiteDatabase.CONFLICT_IGNORE);
+                    }
+                    Toast.makeText(DetailedMovieActivity.this,"Movie Favorited",Toast.LENGTH_SHORT).show();
                 }
                 else{
                     favoriteButton.setImageResource(R.drawable.ic_favorite);
                     movie.setFavorited(false);
+                    if(getIntent().getExtras().getInt(ARG_SECTION_NUMBER) == 0){
+                        MainActivity.popularDB.updateWithOnConflict(MovieDBContract.MovieEntry.TABLE_NAME,createContentValues(),movie.getId() +"="+ cursor.getInt(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_ID)),null,SQLiteDatabase.CONFLICT_IGNORE);
+                    }
+                    else {
+                        MainActivity.topRatedDB.updateWithOnConflict(MovieDBContract.MovieEntry.TABLE_NAME,createContentValues(),movie.getId() +"="+ cursor.getInt(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_ID)),null,SQLiteDatabase.CONFLICT_IGNORE);
+                    }
+                    Toast.makeText(DetailedMovieActivity.this,"Movie Unfavorited",Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -182,6 +219,18 @@ public class DetailedMovieActivity extends AppCompatActivity{
             reviewsRecyclerView.setItemAnimator(new DefaultItemAnimator());
             reviewsRecyclerView.setAdapter(new ReviewsRecyclerViewAdapter(reviews));
         }
-    }
 
+
+    }
+    public ContentValues createContentValues(){
+        ContentValues cv = new ContentValues();
+        cv.put(MovieDBContract.MovieEntry.COLUMN_DATE,movie.getRelease_date());
+        cv.put(MovieDBContract.MovieEntry.COLUMN_FAVORITE,movie.isFavorited());
+        cv.put(MovieDBContract.MovieEntry.COLUMN_ID,movie.getId());
+        cv.put(MovieDBContract.MovieEntry.COLUMN_OVERVIEW,movie.getOverview());
+        cv.put(MovieDBContract.MovieEntry.COLUMN_TITLE,movie.getOriginal_title());
+        cv.put(MovieDBContract.MovieEntry.COLUMN_POSTER_PATH,movie.getPoster_path());
+        cv.put(MovieDBContract.MovieEntry.COLUMN_VOTE_AVERAGE,movie.getVote_average());
+        return cv;
+    }
 }

@@ -14,6 +14,19 @@ public class Movie implements Parcelable {
     private String overview;
     private int id;
     private String trailerKey;
+    private boolean favorited;
+
+    public Movie(String original_title, String release_date,
+                 String poster_path, float vote_average, String overview,
+                 int id, boolean favorited) {
+        this.original_title = original_title;
+        this.release_date = release_date;
+        this.poster_path = poster_path;
+        this.vote_average = vote_average;
+        this.overview = overview;
+        this.id = id;
+        this.favorited = favorited;
+    }
 
     public String getTrailerKey() {
         return trailerKey;
@@ -30,9 +43,6 @@ public class Movie implements Parcelable {
     public void setFavorited(boolean favorited) {
         this.favorited = favorited;
     }
-
-    private boolean favorited;
-
 
     public int getId() {
         return id;

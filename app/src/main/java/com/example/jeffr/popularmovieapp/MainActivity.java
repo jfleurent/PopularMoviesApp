@@ -1,6 +1,9 @@
 package com.example.jeffr.popularmovieapp;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentActivity;
@@ -53,6 +56,13 @@ public class MainActivity extends AppCompatActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
 
+    private static final String DATABASE_NAME = "popular_movies.db";
+    private static final String DATABASE_NAME2 = "toprated_movies.db";
+
+    public static SQLiteDatabase popularDB;
+    public static SQLiteDatabase topRatedDB;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +75,10 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.addOnPageChangeListener(new MyPageChangeListener());
         tabLayout.addOnTabSelectedListener(new MyTabAdapter());
+        MovieDBHelper movieDBHelper = new MovieDBHelper(this,DATABASE_NAME);
+        MovieDBHelper movieDBHelper2 = new MovieDBHelper(this,DATABASE_NAME2);
+        popularDB = movieDBHelper.getWritableDatabase();
+        topRatedDB = movieDBHelper2.getWritableDatabase();
         new FetchMovies().execute();
 
     }
@@ -112,7 +126,28 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(List<List<Movie>> movies) {
             progressBar.setVisibility(View.INVISIBLE);
             mViewPager.setVisibility(View.VISIBLE);
-            PlaceholderFragment.movieLists = movies;
+            for(Movie movie : movies.get(0)){
+                ContentValues cv = new ContentValues();
+                cv.put(MovieDBContract.MovieEntry.COLUMN_DATE,movie.getRelease_date());
+                cv.put(MovieDBContract.MovieEntry.COLUMN_FAVORITE,movie.isFavorited());
+                cv.put(MovieDBContract.MovieEntry.COLUMN_ID,movie.getId());
+                cv.put(MovieDBContract.MovieEntry.COLUMN_OVERVIEW,movie.getOverview());
+                cv.put(MovieDBContract.MovieEntry.COLUMN_TITLE,movie.getOriginal_title());
+                cv.put(MovieDBContract.MovieEntry.COLUMN_POSTER_PATH,movie.getPoster_path());
+                cv.put(MovieDBContract.MovieEntry.COLUMN_VOTE_AVERAGE,movie.getVote_average());
+                popularDB.insert(MovieDBContract.MovieEntry.TABLE_NAME,null,cv);
+            }
+            for(Movie movie : movies.get(1)){
+                ContentValues cv = new ContentValues();
+                cv.put(MovieDBContract.MovieEntry.COLUMN_DATE,movie.getRelease_date());
+                cv.put(MovieDBContract.MovieEntry.COLUMN_FAVORITE,movie.isFavorited());
+                cv.put(MovieDBContract.MovieEntry.COLUMN_ID,movie.getId());
+                cv.put(MovieDBContract.MovieEntry.COLUMN_OVERVIEW,movie.getOverview());
+                cv.put(MovieDBContract.MovieEntry.COLUMN_TITLE,movie.getOriginal_title());
+                cv.put(MovieDBContract.MovieEntry.COLUMN_POSTER_PATH,movie.getPoster_path());
+                cv.put(MovieDBContract.MovieEntry.COLUMN_VOTE_AVERAGE,movie.getVote_average());
+                topRatedDB.insert(MovieDBContract.MovieEntry.TABLE_NAME,null,cv);
+            }
             PlaceholderFragment.fragments.get(0).resetRecyclerview();
             PlaceholderFragment.fragments.get(1).resetRecyclerview();
         }
@@ -128,7 +163,9 @@ public class MainActivity extends AppCompatActivity {
 
         public static List<PlaceholderFragment> fragments = new ArrayList<>();
         static int sectionNumber = 0;
-        public static List<List<Movie>> movieLists;
+
+        public  Cursor cursor;
+        public static int rowSelected;
 
         public PlaceholderFragment() {
         }
@@ -143,8 +180,27 @@ public class MainActivity extends AppCompatActivity {
 
         public void resetRecyclerview(){
             RecyclerviewAdapter recyclerviewAdapter = new RecyclerviewAdapter(this);
-            recyclerviewAdapter.setMovieList(movieLists.get(getArguments().getInt(ARG_SECTION_NUMBER)));
+            if(getArguments().getInt(ARG_SECTION_NUMBER) == 0){
+                recyclerviewAdapter.setCursor(getCursor(popularDB));
+            }
+            else{
+                recyclerviewAdapter.setCursor(getCursor(topRatedDB));
+            }
             recyclerView.setAdapter(recyclerviewAdapter);
+        }
+
+        private Cursor getCursor(SQLiteDatabase database) {
+            cursor = database.query(
+                    MovieDBContract.MovieEntry.TABLE_NAME,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            );
+            return cursor;
+
         }
 
 
@@ -163,9 +219,19 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void rowSelected(int row) {
-            Movie selectedMovie = movieLists.get(sectionNumber).get(row);
+            rowSelected = row;
+            cursor.moveToPosition(row);
+            String orginalTitle = cursor.getString(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_TITLE));
+            String releaseDate = cursor.getString(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_DATE));
+            String posterPath = cursor.getString(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_POSTER_PATH));
+            float voteAverage = cursor.getFloat(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_VOTE_AVERAGE));
+            String overview = cursor.getString(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_OVERVIEW));
+            int id = cursor.getInt(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_ID));
+            boolean favorited = cursor.getInt(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_FAVORITE)) == 1;
             Intent intent = new Intent(getActivity(), DetailedMovieActivity.class);
-            intent.putExtra("Movie",selectedMovie);
+            intent.putExtra("Movie",new Movie(orginalTitle,releaseDate,posterPath,voteAverage,overview,id,favorited));
+            intent.putExtra(ARG_SECTION_NUMBER,sectionNumber);
+            intent.putExtra("Row",row);
             startActivity(intent);
         }
     }

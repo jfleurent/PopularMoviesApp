@@ -1,6 +1,7 @@
 package com.example.jeffr.popularmovieapp.adapters;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.jeffr.popularmovieapp.MovieDBContract;
 import com.example.jeffr.popularmovieapp.dataobjects.Movie;
 import com.example.jeffr.popularmovieapp.R;
 import com.squareup.picasso.Picasso;
@@ -20,15 +22,15 @@ import butterknife.ButterKnife;
 
 public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapter.RecyclerViewHolder> {
     RecyclerViewOnClick recyclerViewOnClick;
-    List<Movie> movieList = new ArrayList<>();
+    Cursor cursor;
     ViewGroup parent;
 
     public RecyclerviewAdapter( RecyclerViewOnClick recyclerViewOnClick){
         this.recyclerViewOnClick = recyclerViewOnClick;
     }
 
-    public void setMovieList(List<Movie> movieList){
-        this.movieList = movieList;
+    public void setCursor(Cursor cursor){
+        this.cursor = cursor;
     }
 
     @Override
@@ -44,11 +46,16 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
 
     @Override
     public void onBindViewHolder(RecyclerViewHolder holder, final int position) {
-            holder.movieDate.setText(movieList.get(position).getRelease_date());
-            holder.movieOverview.setText(movieList.get(position).getOverview());
-            holder.movieTitle.setText(movieList.get(position).getOriginal_title());
+
+        if (!cursor.moveToPosition(position))
+            return; // bail if returned null
+
+            holder.movieDate.setText(cursor.getString(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_DATE)));
+            holder.movieOverview.setText(cursor.getString(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_OVERVIEW)));
+            holder.movieTitle.setText(cursor.getString(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_TITLE)));
             Picasso.with(parent.getContext())
-                .load("https://image.tmdb.org/t/p/w500/"+movieList.get(position).getPoster_path())
+                .load("https://image.tmdb.org/t/p/w500/"+cursor.getString(cursor.
+                        getColumnIndex(MovieDBContract.MovieEntry.COLUMN_POSTER_PATH)))
                 .into(holder.moviePoster);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +67,7 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
 
     @Override
     public int getItemCount() {
-        return movieList.size();
+        return cursor != null ? cursor.getCount() : 0;
     }
 
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
