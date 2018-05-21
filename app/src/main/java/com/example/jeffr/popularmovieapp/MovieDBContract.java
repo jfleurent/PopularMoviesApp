@@ -33,6 +33,7 @@ public class MovieDBContract {
         public static final String COLUMN_VOTE_AVERAGE = "voteAverage";
         public static final String COLUMN_OVERVIEW = "overview";
         public static final String COLUMN_ID = "movie_id";
+        public static final String COLUMN_POPULARITY = "popularity";
         public static final String COLUMN_FAVORITE = "favorite";
 
 

@@ -70,6 +70,11 @@ public class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapte
         return cursor != null ? cursor.getCount() : 0;
     }
 
+    void swapCursor(Cursor newCursor) {
+        cursor = newCursor;
+        notifyDataSetChanged();
+    }
+
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.movie_date_textview)
         TextView movieDate;

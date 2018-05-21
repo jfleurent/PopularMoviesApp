@@ -67,16 +67,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setSupportActionBar(toolbar);
         ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.bg_color_status));
         API_KEY = getString(R.string.THE_MOVIE_DB_API_TOKEN);
+        toolbar.inflateMenu(R.menu.menu);
         mainActivityContext = this;
         fragmentManager = getSupportFragmentManager();
         tabLayout = findViewById(R.id.tabs);
         mViewPager = findViewById(R.id.container);
         progressBar = findViewById(R.id.progressbar);
         new FetchMovies().execute();
+
     }
 
     @Override
@@ -88,15 +91,29 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        Bundle bundle = null;
         switch(id){
             case R.id.toprated:
-                PlaceholderFragment.fragments.get(0).resetLoader("toprated");
+                bundle = new Bundle();
+                bundle.putString("OrderBy", MovieDBContract.MovieEntry.COLUMN_VOTE_AVERAGE + " DESC");
+                PlaceholderFragment.bundle = bundle;
+                fragmentManager.beginTransaction().detach(PlaceholderFragment.fragments.get(0)).attach(PlaceholderFragment.fragments.get(0)).commit();
+                fragmentManager.beginTransaction().detach(PlaceholderFragment.fragments.get(1)).attach(PlaceholderFragment.fragments.get(1)).commit();
                 break;
             case R.id.popular:
-                PlaceholderFragment.fragments.get(0).resetLoader("toprated");
+                bundle = new Bundle();
+                bundle.putString("OrderBy", MovieDBContract.MovieEntry.COLUMN_POPULARITY + " DESC");
+                PlaceholderFragment.bundle = bundle;
+                fragmentManager.beginTransaction().detach(PlaceholderFragment.fragments.get(0)).attach(PlaceholderFragment.fragments.get(0)).commit();
+                fragmentManager.beginTransaction().detach(PlaceholderFragment.fragments.get(1)).attach(PlaceholderFragment.fragments.get(1)).commit();
                 break;
             case R.id.favorites:
-                PlaceholderFragment.fragments.get(0).resetLoader("favorited");
+                bundle = new Bundle();
+                bundle.putString("OrderBy", MovieDBContract.MovieEntry.COLUMN_FAVORITE + " DESC");
+                bundle.putString("Where", MovieDBContract.MovieEntry.COLUMN_FAVORITE +" = " + 1);
+                PlaceholderFragment.bundle = bundle;
+                fragmentManager.beginTransaction().detach(PlaceholderFragment.fragments.get(0)).attach(PlaceholderFragment.fragments.get(0)).commit();
+                fragmentManager.beginTransaction().detach(PlaceholderFragment.fragments.get(1)).attach(PlaceholderFragment.fragments.get(1)).commit();
                 break;
         }
         return super.onOptionsItemSelected(item);

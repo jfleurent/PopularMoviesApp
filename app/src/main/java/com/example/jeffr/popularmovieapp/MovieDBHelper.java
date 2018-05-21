@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class MovieDBHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
     public MovieDBHelper(Context context,String database) {
         super(context, database, null, DATABASE_VERSION);
@@ -21,6 +21,7 @@ public class MovieDBHelper extends SQLiteOpenHelper {
                 MovieDBContract.MovieEntry.COLUMN_OVERVIEW +" TEXT NOT NULL, "+
                 MovieDBContract.MovieEntry.COLUMN_POSTER_PATH +" TEXT NOT NULL, "+
                 MovieDBContract.MovieEntry.COLUMN_VOTE_AVERAGE +" REAL NOT NULL, "+
+                MovieDBContract.MovieEntry.COLUMN_POPULARITY + " REAL NOT NULL, "+
                 MovieDBContract.MovieEntry.COLUMN_FAVORITE +" INTEGER NOT NULL );";
         sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_TABLE);
     }

@@ -47,6 +47,8 @@ public class PlaceholderFragment extends Fragment implements RecyclerViewOnClick
     public static List<PlaceholderFragment> fragments = new ArrayList<>();
     static int sectionNumber = 0;
 
+    public static Bundle bundle;
+
     public  Cursor cursor;
     public static int rowSelected;
 
@@ -71,14 +73,23 @@ public class PlaceholderFragment extends Fragment implements RecyclerViewOnClick
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(new RecyclerviewAdapter(this));
-        if(getArguments().getInt(ARG_SECTION_NUMBER) == 0){
-
-            getActivity().getSupportLoaderManager().initLoader(SECTION1_LOADER, null, this);
+        if(bundle != null){
+            if(getArguments().getInt(ARG_SECTION_NUMBER) == 0){
+                getActivity().getSupportLoaderManager().restartLoader(SECTION1_LOADER,bundle,this);
+            }
+            else{
+                getActivity().getSupportLoaderManager().restartLoader(SECTION2_LOADER,bundle,this);
+            }
         }
         else{
-
-            getActivity().getSupportLoaderManager().initLoader(SECTION2_LOADER, null, this);
+            if(getArguments().getInt(ARG_SECTION_NUMBER) == 0){
+                getActivity().getSupportLoaderManager().initLoader(SECTION1_LOADER, null, this);
+            }
+            else{
+                getActivity().getSupportLoaderManager().initLoader(SECTION2_LOADER, null, this);
+            }
         }
+
 
         return rootView;
     }
@@ -93,9 +104,10 @@ public class PlaceholderFragment extends Fragment implements RecyclerViewOnClick
         float voteAverage = cursor.getFloat(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_VOTE_AVERAGE));
         String overview = cursor.getString(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_OVERVIEW));
         int id = cursor.getInt(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_ID));
+        float popularity = cursor.getFloat(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_POPULARITY));
         boolean favorited = cursor.getInt(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_FAVORITE)) == 1;
         Intent intent = new Intent(getActivity(), DetailedMovieActivity.class);
-        intent.putExtra("Movie",new Movie(orginalTitle,releaseDate,posterPath,voteAverage,overview,id,favorited));
+        intent.putExtra("Movie",new Movie(orginalTitle,releaseDate,posterPath,voteAverage,overview,id,favorited,popularity));
         intent.putExtra(ARG_SECTION_NUMBER,sectionNumber);
         startActivity(intent);
     }
@@ -103,6 +115,8 @@ public class PlaceholderFragment extends Fragment implements RecyclerViewOnClick
     @NonNull
     @Override
     public android.support.v4.content.Loader<Cursor> onCreateLoader(int loaderId, @Nullable Bundle args) {
+        String orderBy = null;
+        String where = null;
         switch (loaderId) {
             case SECTION1_LOADER:
                 Uri forecastQueryUri = MovieDBContract.MovieEntry.POPULAR_CONTENT_URI;
@@ -110,20 +124,21 @@ public class PlaceholderFragment extends Fragment implements RecyclerViewOnClick
                 return new CursorLoader(getActivity(),
                         forecastQueryUri,
                         null,
+                        where = args != null ? args.getString("Where"): null,
                         null,
-                        null,
-                        null);
+                        orderBy = args != null ? args.getString("OrderBy"): null);
             case SECTION2_LOADER:
                 Uri forecastQueryUri2 = MovieDBContract.MovieEntry.TOP_RATED_CONTENT_URI;
                 Log.v(TAG, forecastQueryUri2.toString());
                 return new CursorLoader(getActivity(),
                         forecastQueryUri2,
                         null,
+                        where = args != null ? args.getString("Where"): null,
                         null,
-                        null,
-                        null);
+                        orderBy = args != null ? args.getString("OrderBy"): null);
             default:
                 throw new RuntimeException("Loader Not Implemented: " + loaderId);
+
     }
     }
 
@@ -138,25 +153,7 @@ public class PlaceholderFragment extends Fragment implements RecyclerViewOnClick
 
     @Override
     public void onLoaderReset(@NonNull android.support.v4.content.Loader<Cursor> loader) {
-
-    }
-
-    public void resetLoader(String ordering){
-        Bundle bundle = new Bundle();
-        switch (ordering){
-            case "toprated":
-                bundle.putString("OrderBy", MovieDBContract.MovieEntry.COLUMN_VOTE_AVERAGE + "ASC");
-                break;
-            case "popular":
-                bundle.putString("OrderBy", MovieDBContract.MovieEntry.COLUMN_VOTE_AVERAGE + "ASC");
-                break;
-            case "favorited":
-                bundle.putString("OrderBy", MovieDBContract.MovieEntry.COLUMN_FAVORITE + "ASC");
-                break;
-        }
-
-       getActivity().getLoaderManager().restartLoader(PlaceholderFragment.SECTION1_LOADER,bundle,(LoaderManager.LoaderCallbacks<Cursor>)this);
-        getActivity().getLoaderManager().restartLoader(PlaceholderFragment.SECTION2_LOADER,bundle,(LoaderManager.LoaderCallbacks<Cursor>)this);
+        Log.v(TAG, "Restarted");
     }
 
 }

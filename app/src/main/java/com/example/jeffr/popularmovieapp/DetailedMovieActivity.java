@@ -137,7 +137,7 @@ public class DetailedMovieActivity extends AppCompatActivity {
         favoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int sectionNumber = getIntent().getExtras().getInt("ARG_SECTION_NUMBER");
+                int sectionNumber = getIntent().getExtras().getInt("section_number");
 
                 ContentValues cv = new ContentValues();
                 cv.put(MovieDBContract.MovieEntry.COLUMN_DATE, movie.getRelease_date());
@@ -146,8 +146,8 @@ public class DetailedMovieActivity extends AppCompatActivity {
                 cv.put(MovieDBContract.MovieEntry.COLUMN_OVERVIEW, movie.getOverview());
                 cv.put(MovieDBContract.MovieEntry.COLUMN_TITLE, movie.getOriginal_title());
                 cv.put(MovieDBContract.MovieEntry.COLUMN_POSTER_PATH, movie.getPoster_path());
+                cv.put(MovieDBContract.MovieEntry.COLUMN_POPULARITY,movie.getPopularity());
                 cv.put(MovieDBContract.MovieEntry.COLUMN_VOTE_AVERAGE, movie.getVote_average());
-
                 switch (sectionNumber) {
                     case 0:
                         Uri forecastQueryUri = MovieDBContract.MovieEntry.POPULAR_CONTENT_URI;
@@ -167,6 +167,7 @@ public class DetailedMovieActivity extends AppCompatActivity {
                                 , null);
                         movie.setFavorited(!movie.isFavorited());
                         setFavoriteButton(movie.isFavorited());
+
                         break;
 
                 }

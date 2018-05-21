@@ -23,6 +23,7 @@ import static com.example.jeffr.popularmovieapp.MainActivity.mSectionsPagerAdapt
 import static com.example.jeffr.popularmovieapp.MainActivity.progressBar;
 import static com.example.jeffr.popularmovieapp.MainActivity.mViewPager;
 import static com.example.jeffr.popularmovieapp.MainActivity.tabLayout;
+import static com.example.jeffr.popularmovieapp.PlaceholderFragment.sectionNumber;
 
 public class FetchMovies extends AsyncTask<String, Void, List<List<Movie>>> {
 
@@ -56,7 +57,6 @@ public class FetchMovies extends AsyncTask<String, Void, List<List<Movie>>> {
             movieLists.add(movieList);
 
         } catch (Exception e) {
-            Log.v(TAG, "Something went wrong");
         }
         return movieLists;
     }
@@ -74,6 +74,7 @@ public class FetchMovies extends AsyncTask<String, Void, List<List<Movie>>> {
             cv.put(MovieDBContract.MovieEntry.COLUMN_TITLE,movie.getOriginal_title());
             cv.put(MovieDBContract.MovieEntry.COLUMN_POSTER_PATH,movie.getPoster_path());
             cv.put(MovieDBContract.MovieEntry.COLUMN_VOTE_AVERAGE,movie.getVote_average());
+            cv.put(MovieDBContract.MovieEntry.COLUMN_POPULARITY,movie.getPopularity());
             MainActivity.mainActivityContext.getContentResolver().insert(
                     MovieDBContract.MovieEntry.POPULAR_CONTENT_URI,cv
             );
@@ -87,6 +88,7 @@ public class FetchMovies extends AsyncTask<String, Void, List<List<Movie>>> {
             cv.put(MovieDBContract.MovieEntry.COLUMN_TITLE,movie.getOriginal_title());
             cv.put(MovieDBContract.MovieEntry.COLUMN_POSTER_PATH,movie.getPoster_path());
             cv.put(MovieDBContract.MovieEntry.COLUMN_VOTE_AVERAGE,movie.getVote_average());
+            cv.put(MovieDBContract.MovieEntry.COLUMN_POPULARITY,movie.getPopularity());
             MainActivity.mainActivityContext.getContentResolver().insert(
                     MovieDBContract.MovieEntry.TOP_RATED_CONTENT_URI,cv
             );
@@ -103,9 +105,9 @@ public class FetchMovies extends AsyncTask<String, Void, List<List<Movie>>> {
         public void onTabSelected(TabLayout.Tab tab) {
             mViewPager.setCurrentItem(tab.getPosition());
             if (tab.equals(tabLayout.getTabAt(0))) {
-                PlaceholderFragment.sectionNumber = 0;
+                sectionNumber = 0;
             } else {
-                PlaceholderFragment.sectionNumber = 1;
+                sectionNumber = 1;
             }
         }
 

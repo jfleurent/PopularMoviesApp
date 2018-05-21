@@ -15,10 +15,11 @@ public class Movie implements Parcelable {
     private int id;
     private String trailerKey;
     private boolean favorited;
+    private float popularity;
 
     public Movie(String original_title, String release_date,
                  String poster_path, float vote_average, String overview,
-                 int id, boolean favorited) {
+                 int id, boolean favorited, float popularity) {
         this.original_title = original_title;
         this.release_date = release_date;
         this.poster_path = poster_path;
@@ -26,6 +27,16 @@ public class Movie implements Parcelable {
         this.overview = overview;
         this.id = id;
         this.favorited = favorited;
+        this.popularity = popularity;
+
+    }
+
+    public float getPopularity() {
+        return popularity;
+    }
+
+    public void setPopularity(float popularity) {
+        this.popularity = popularity;
     }
 
     public String getTrailerKey() {
@@ -115,6 +126,7 @@ public class Movie implements Parcelable {
         dest.writeInt(this.id);
         dest.writeString(this.trailerKey);
         dest.writeByte(this.favorited ? (byte) 1 : (byte) 0);
+        dest.writeFloat(this.popularity);
     }
 
     protected Movie(Parcel in) {
@@ -126,6 +138,7 @@ public class Movie implements Parcelable {
         this.id = in.readInt();
         this.trailerKey = in.readString();
         this.favorited = in.readByte() != 0;
+        this.popularity = in.readFloat();
     }
 
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {
