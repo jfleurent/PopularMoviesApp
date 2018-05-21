@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.example.jeffr.popularmovieapp.MainActivity;
+import com.example.jeffr.popularmovieapp.PlaceholderFragment;
 
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
@@ -14,8 +15,8 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        MainActivity.PlaceholderFragment.fragments.add(MainActivity.PlaceholderFragment.newInstance(position));
-        return MainActivity.PlaceholderFragment.fragments.get(position);
+        PlaceholderFragment.fragments.add(PlaceholderFragment.newInstance(position));
+        return PlaceholderFragment.fragments.get(position);
     }
 
 

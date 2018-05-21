@@ -6,9 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class MovieDBHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "popular_movies.db";
-    private static final String DATABASE_NAME2 = "toprated_movies.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 6;
 
     public MovieDBHelper(Context context,String database) {
         super(context, database, null, DATABASE_VERSION);

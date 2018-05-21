@@ -25,6 +25,14 @@
         <activity android:name=".DetailedMovieActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+
+        <provider
+            android:name=".MovieContentProvider"
+            android:authorities="@string/content_authority"
+            android:exported="false"/>
+
     </application>
+
+
 
 </manifest>

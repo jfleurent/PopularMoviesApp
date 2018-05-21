@@ -7,9 +7,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -48,8 +53,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static android.content.ContentValues.TAG;
+import static com.example.jeffr.popularmovieapp.PlaceholderFragment.SECTION1_LOADER;
+import static com.example.jeffr.popularmovieapp.PlaceholderFragment.SECTION2_LOADER;
 
-public class DetailedMovieActivity extends AppCompatActivity{
+public class DetailedMovieActivity extends AppCompatActivity {
 
     @BindView(R.id.movie_poster_imageview)
     ImageView moviePoster;
@@ -85,11 +92,12 @@ public class DetailedMovieActivity extends AppCompatActivity{
     ScrollView scrollView;
 
     Movie movie;
+    Cursor cursor;
 
     private static final String ARG_SECTION_NUMBER = "section_number";
 
-    private  String API_KEY;
-    private  String API_KEY2;
+    private String API_KEY;
+    private String API_KEY2;
 
 
     @Override
@@ -97,23 +105,23 @@ public class DetailedMovieActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailed_movie);
         ButterKnife.bind(this);
-         movie = getIntent().getParcelableExtra("Movie");
+        movie = getIntent().getParcelableExtra("Movie");
         API_KEY = getString(R.string.THE_MOVIE_DB_API_TOKEN);
         API_KEY2 = getString(R.string.YOUTUBE_API_KEY);
         Picasso.with(this)
-                .load("https://image.tmdb.org/t/p/w500/"+movie.getPoster_path())
+                .load("https://image.tmdb.org/t/p/w500/" + movie.getPoster_path())
                 .into(moviePoster);
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.bg_color_status));
         movieDate.setText(movie.getRelease_date());
         movieOverview.setText(movie.getOverview());
         movieTitle.setText(movie.getOriginal_title());
         movieVotes.setText(String.valueOf(movie.getVote_average()));
-        scrollView.smoothScrollTo(0,20);
-        scrollView.smoothScrollBy(0,20);
-        if(movie.isFavorited()){
+        scrollView.smoothScrollTo(0, 20);
+        scrollView.smoothScrollBy(0, 20);
+
+        if (movie.isFavorited()) {
             favoriteButton.setImageResource(R.drawable.ic_favorite_on);
-        }
-        else{
+        } else {
             favoriteButton.setImageResource(R.drawable.ic_favorite);
         }
 
@@ -129,41 +137,58 @@ public class DetailedMovieActivity extends AppCompatActivity{
         favoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Cursor cursor = MainActivity.PlaceholderFragment.fragments.get(getIntent().getExtras().getInt(ARG_SECTION_NUMBER)).cursor;
-                int row = getIntent().getExtras().getInt("Row");
-                cursor.moveToPosition(row);
-                if(cursor.getInt(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_FAVORITE))==0){
-                    favoriteButton.setImageResource(R.drawable.ic_favorite_on);
-                    movie.setFavorited(true);
-                    if(getIntent().getExtras().getInt(ARG_SECTION_NUMBER) == 0){
-                        MainActivity.popularDB.updateWithOnConflict(MovieDBContract.MovieEntry.TABLE_NAME,createContentValues(),movie.getId() +"="+ cursor.getInt(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_ID)),null, SQLiteDatabase.CONFLICT_IGNORE);
-                    }
-                    else {
-                        MainActivity.topRatedDB.updateWithOnConflict(MovieDBContract.MovieEntry.TABLE_NAME,createContentValues(),movie.getId() +"="+ cursor.getInt(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_ID)),null,SQLiteDatabase.CONFLICT_IGNORE);
-                    }
-                    Toast.makeText(DetailedMovieActivity.this,"Movie Favorited",Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    favoriteButton.setImageResource(R.drawable.ic_favorite);
-                    movie.setFavorited(false);
-                    if(getIntent().getExtras().getInt(ARG_SECTION_NUMBER) == 0){
-                        MainActivity.popularDB.updateWithOnConflict(MovieDBContract.MovieEntry.TABLE_NAME,createContentValues(),movie.getId() +"="+ cursor.getInt(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_ID)),null,SQLiteDatabase.CONFLICT_IGNORE);
-                    }
-                    else {
-                        MainActivity.topRatedDB.updateWithOnConflict(MovieDBContract.MovieEntry.TABLE_NAME,createContentValues(),movie.getId() +"="+ cursor.getInt(cursor.getColumnIndex(MovieDBContract.MovieEntry.COLUMN_ID)),null,SQLiteDatabase.CONFLICT_IGNORE);
-                    }
-                    Toast.makeText(DetailedMovieActivity.this,"Movie Unfavorited",Toast.LENGTH_SHORT).show();
-                }
+                int sectionNumber = getIntent().getExtras().getInt("ARG_SECTION_NUMBER");
 
+                ContentValues cv = new ContentValues();
+                cv.put(MovieDBContract.MovieEntry.COLUMN_DATE, movie.getRelease_date());
+                cv.put(MovieDBContract.MovieEntry.COLUMN_FAVORITE, !movie.isFavorited());
+                cv.put(MovieDBContract.MovieEntry.COLUMN_ID, movie.getId());
+                cv.put(MovieDBContract.MovieEntry.COLUMN_OVERVIEW, movie.getOverview());
+                cv.put(MovieDBContract.MovieEntry.COLUMN_TITLE, movie.getOriginal_title());
+                cv.put(MovieDBContract.MovieEntry.COLUMN_POSTER_PATH, movie.getPoster_path());
+                cv.put(MovieDBContract.MovieEntry.COLUMN_VOTE_AVERAGE, movie.getVote_average());
+
+                switch (sectionNumber) {
+                    case 0:
+                        Uri forecastQueryUri = MovieDBContract.MovieEntry.POPULAR_CONTENT_URI;
+                        getContentResolver().update(forecastQueryUri,
+                                cv,
+                                MovieDBContract.MovieEntry.COLUMN_ID + " = " + movie.getId()
+                                , null);
+                        movie.setFavorited(!movie.isFavorited());
+                        setFavoriteButton(movie.isFavorited());
+                        break;
+
+                    case 1:
+                        Uri forecastQueryUri2 = MovieDBContract.MovieEntry.TOP_RATED_CONTENT_URI;
+                        getContentResolver().update(forecastQueryUri2,
+                                cv,
+                                MovieDBContract.MovieEntry.COLUMN_ID + " = " + movie.getId()
+                                , null);
+                        movie.setFavorited(!movie.isFavorited());
+                        setFavoriteButton(movie.isFavorited());
+                        break;
+
+                }
             }
         });
     }
 
-    class FetchTrailer extends AsyncTask<Integer,Void,String>{
+    public void setFavoriteButton(Boolean favorite) {
+        if (favorite) {
+            favoriteButton.setImageResource(R.drawable.ic_favorite_on);
+            Toast.makeText(DetailedMovieActivity.this, "Movie Favorited", Toast.LENGTH_SHORT).show();
+        } else {
+            favoriteButton.setImageResource(R.drawable.ic_favorite);
+            Toast.makeText(DetailedMovieActivity.this, "Movie Unfavorited", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    class FetchTrailer extends AsyncTask<Integer, Void, String> {
 
         @Override
         protected String doInBackground(Integer... integers) {
-            URL trailerLink = NetworkUtils.buildVideoUrl(API_KEY,integers[0]);
+            URL trailerLink = NetworkUtils.buildVideoUrl(API_KEY, integers[0]);
             try {
                 String jsonResponse = NetworkUtils
                         .getResponseFromHttpUrl(trailerLink);
@@ -190,7 +215,7 @@ public class DetailedMovieActivity extends AppCompatActivity{
         }
     }
 
-    class FetchReview extends AsyncTask<Integer,Void,List<Review>>{
+    class FetchReview extends AsyncTask<Integer, Void, List<Review>> {
 
         @Override
         protected void onPreExecute() {
@@ -199,7 +224,7 @@ public class DetailedMovieActivity extends AppCompatActivity{
 
         @Override
         protected List<Review> doInBackground(Integer... integers) {
-            URL reviewsLink = NetworkUtils.buildReviewsUrl(API_KEY,integers[0]);
+            URL reviewsLink = NetworkUtils.buildReviewsUrl(API_KEY, integers[0]);
             try {
                 String jsonResponse = NetworkUtils
                         .getResponseFromHttpUrl(reviewsLink);
@@ -221,16 +246,5 @@ public class DetailedMovieActivity extends AppCompatActivity{
         }
 
 
-    }
-    public ContentValues createContentValues(){
-        ContentValues cv = new ContentValues();
-        cv.put(MovieDBContract.MovieEntry.COLUMN_DATE,movie.getRelease_date());
-        cv.put(MovieDBContract.MovieEntry.COLUMN_FAVORITE,movie.isFavorited());
-        cv.put(MovieDBContract.MovieEntry.COLUMN_ID,movie.getId());
-        cv.put(MovieDBContract.MovieEntry.COLUMN_OVERVIEW,movie.getOverview());
-        cv.put(MovieDBContract.MovieEntry.COLUMN_TITLE,movie.getOriginal_title());
-        cv.put(MovieDBContract.MovieEntry.COLUMN_POSTER_PATH,movie.getPoster_path());
-        cv.put(MovieDBContract.MovieEntry.COLUMN_VOTE_AVERAGE,movie.getVote_average());
-        return cv;
     }
 }

@@ -53,6 +53,7 @@ public class ReviewsRecyclerViewAdapter extends RecyclerView.Adapter<ReviewsRecy
          }
          else{
             return 0;
+
          }
 
     }

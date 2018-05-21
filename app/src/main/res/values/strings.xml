@@ -14,4 +14,5 @@
 
     <string name="trailer">Trailer</string>
     <string name="reviews_title">Reviews</string>
+    <string name="content_authority">com.example.jeffr.popularmovieapp</string>
 </resources>
