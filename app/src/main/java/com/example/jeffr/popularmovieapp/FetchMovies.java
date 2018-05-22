@@ -4,10 +4,10 @@ import android.content.ContentValues;
 import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
 
 import com.example.jeffr.popularmovieapp.adapters.SectionsPagerAdapter;
+import com.example.jeffr.popularmovieapp.data.MovieDBContract;
 import com.example.jeffr.popularmovieapp.dataobjects.Movie;
 import com.example.jeffr.popularmovieapp.utilities.JsonUtils;
 import com.example.jeffr.popularmovieapp.utilities.NetworkUtils;
@@ -16,7 +16,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.content.ContentValues.TAG;
 import static com.example.jeffr.popularmovieapp.MainActivity.API_KEY;
 import static com.example.jeffr.popularmovieapp.MainActivity.fragmentManager;
 import static com.example.jeffr.popularmovieapp.MainActivity.mSectionsPagerAdapter;
@@ -38,19 +37,31 @@ public class FetchMovies extends AsyncTask<String, Void, List<List<Movie>>> {
         List<Movie> movieList;
 
         List<List<Movie>> movieLists = new ArrayList<>();
-        URL movieUrl = NetworkUtils.buildPopularMoviesUrl(API_KEY);
-        URL movieUrl2 = NetworkUtils.buildTopRatedMoviesUrl(API_KEY);
+        List<URL> movieUrl = new ArrayList<>();
+        for(int i = 1; i < 4; i++){
+            movieUrl.add(NetworkUtils.buildPopularMoviesUrl(API_KEY,i));
+        }
+
+        List<URL> movieUrl2 = new ArrayList<>();
+        for(int i = 1; i < 4; i++){
+            movieUrl2.add(NetworkUtils.buildTopRatedMoviesUrl(API_KEY,i));
+        }
+
         try {
 
-            String jsonResponse = NetworkUtils
-                    .getResponseFromHttpUrl(movieUrl);
+            List<String> jsonResponse = new ArrayList<>();
+            for (URL url : movieUrl){
+                jsonResponse.add(NetworkUtils.getResponseFromHttpUrl(url));
+            }
 
             movieList = JsonUtils.getMoviesList(jsonResponse);
 
             movieLists.add(movieList);
 
-            String jsonResponse2 = NetworkUtils
-                    .getResponseFromHttpUrl(movieUrl2);
+            List<String> jsonResponse2 = new ArrayList<>();
+            for (URL url : movieUrl2){
+                jsonResponse2.add(NetworkUtils.getResponseFromHttpUrl(url));
+            }
 
             movieList = JsonUtils.getMoviesList(jsonResponse2);
 

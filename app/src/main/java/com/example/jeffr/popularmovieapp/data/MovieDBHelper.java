@@ -1,8 +1,10 @@
-package com.example.jeffr.popularmovieapp;
+package com.example.jeffr.popularmovieapp.data;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.example.jeffr.popularmovieapp.data.MovieDBContract;
 
 public class MovieDBHelper extends SQLiteOpenHelper {
 

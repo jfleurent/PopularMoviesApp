@@ -5,18 +5,18 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="@dimen/review_layout_margin_top"
+        android:layout_marginBottom="@dimen/review_layout_margin_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
+            android:layout_width="@dimen/reviewer_icon_width"
+            android:layout_height="@dimen/reviewer_icon_height"
+            android:layout_marginLeft="@dimen/reviewer_icon_margin_left"
+            android:layout_marginRight="@dimen/reviewer_icon_margin_right"
+            android:layout_marginTop="@dimen/reviewer_icon_margin_top"
+            android:layout_marginBottom="@dimen/reviewer_icon_margin_bottom"
             android:background="@mipmap/ic_reviewr1_round"/>
 
         <LinearLayout

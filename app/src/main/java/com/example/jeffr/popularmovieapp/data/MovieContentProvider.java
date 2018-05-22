@@ -1,4 +1,4 @@
-package com.example.jeffr.popularmovieapp;
+package com.example.jeffr.popularmovieapp.data;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -8,9 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
-
-import static android.content.ContentValues.TAG;
 
 public class MovieContentProvider extends ContentProvider {
 

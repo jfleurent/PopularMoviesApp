@@ -1,10 +1,7 @@
 package com.example.jeffr.popularmovieapp;
 
-import android.app.LoaderManager;
 import android.content.Intent;
-import android.content.Loader;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,6 +20,7 @@ import android.view.ViewGroup;
 
 import com.example.jeffr.popularmovieapp.adapters.RecyclerViewOnClick;
 import com.example.jeffr.popularmovieapp.adapters.RecyclerviewAdapter;
+import com.example.jeffr.popularmovieapp.data.MovieDBContract;
 import com.example.jeffr.popularmovieapp.dataobjects.Movie;
 
 import java.util.ArrayList;
@@ -73,6 +71,7 @@ public class PlaceholderFragment extends Fragment implements RecyclerViewOnClick
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(new RecyclerviewAdapter(this));
+
         if(bundle != null){
             if(getArguments().getInt(ARG_SECTION_NUMBER) == 0){
                 getActivity().getSupportLoaderManager().restartLoader(SECTION1_LOADER,bundle,this);
@@ -89,8 +88,6 @@ public class PlaceholderFragment extends Fragment implements RecyclerViewOnClick
                 getActivity().getSupportLoaderManager().initLoader(SECTION2_LOADER, null, this);
             }
         }
-
-
         return rootView;
     }
 
@@ -115,8 +112,8 @@ public class PlaceholderFragment extends Fragment implements RecyclerViewOnClick
     @NonNull
     @Override
     public android.support.v4.content.Loader<Cursor> onCreateLoader(int loaderId, @Nullable Bundle args) {
-        String orderBy = null;
-        String where = null;
+        String orderBy;
+        String where;
         switch (loaderId) {
             case SECTION1_LOADER:
                 Uri forecastQueryUri = MovieDBContract.MovieEntry.POPULAR_CONTENT_URI;
@@ -124,7 +121,7 @@ public class PlaceholderFragment extends Fragment implements RecyclerViewOnClick
                 return new CursorLoader(getActivity(),
                         forecastQueryUri,
                         null,
-                        where = args != null ? args.getString("Where"): null,
+                         where = args != null ? args.getString("Where"): null,
                         null,
                         orderBy = args != null ? args.getString("OrderBy"): null);
             case SECTION2_LOADER:
@@ -133,7 +130,7 @@ public class PlaceholderFragment extends Fragment implements RecyclerViewOnClick
                 return new CursorLoader(getActivity(),
                         forecastQueryUri2,
                         null,
-                        where = args != null ? args.getString("Where"): null,
+                         where = args != null ? args.getString("Where"): null,
                         null,
                         orderBy = args != null ? args.getString("OrderBy"): null);
             default:
@@ -148,12 +145,11 @@ public class PlaceholderFragment extends Fragment implements RecyclerViewOnClick
         RecyclerviewAdapter recyclerviewAdapter = new RecyclerviewAdapter(this);
         recyclerviewAdapter.setCursor(cursor);
         recyclerView.setAdapter(recyclerviewAdapter);
-        Log.v(TAG, cursor.getCount()+" has this much data");
     }
 
     @Override
     public void onLoaderReset(@NonNull android.support.v4.content.Loader<Cursor> loader) {
-        Log.v(TAG, "Restarted");
+
     }
 
 }

@@ -27,7 +27,7 @@
         </activity>
 
         <provider
-            android:name=".MovieContentProvider"
+            android:name=".data.MovieContentProvider"
             android:authorities="@string/content_authority"
             android:exported="false"/>
 

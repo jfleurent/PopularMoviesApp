@@ -19,8 +19,6 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         return PlaceholderFragment.fragments.get(position);
     }
 
-
-
     @Override
     public int getCount() {
         return 2;

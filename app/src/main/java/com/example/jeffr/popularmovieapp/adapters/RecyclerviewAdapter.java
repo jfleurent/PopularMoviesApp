@@ -9,13 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.jeffr.popularmovieapp.MovieDBContract;
-import com.example.jeffr.popularmovieapp.dataobjects.Movie;
+import com.example.jeffr.popularmovieapp.data.MovieDBContract;
 import com.example.jeffr.popularmovieapp.R;
 import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

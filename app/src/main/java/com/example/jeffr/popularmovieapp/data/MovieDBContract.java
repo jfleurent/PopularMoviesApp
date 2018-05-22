@@ -1,4 +1,4 @@
-package com.example.jeffr.popularmovieapp;
+package com.example.jeffr.popularmovieapp.data;
 
 import android.net.Uri;
 import android.provider.BaseColumns;
@@ -6,10 +6,6 @@ import android.provider.BaseColumns;
 public class MovieDBContract {
     public static final String CONTENT_AUTHORITY = "com.example.jeffr.popularmovieapp";
 
-    /*
-     * Use CONTENT_AUTHORITY to create the base of all URI's which apps will use to contact
-     * the content provider for Sunshine.
-     */
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     public static final String PATH_POPULAR_MOVIES = "popularmovies";

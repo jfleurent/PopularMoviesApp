@@ -8,18 +8,23 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class JsonUtils {
 
-    public static List<Movie> getMoviesList(String jsonResponse){
+    public static List<Movie> getMoviesList(List<String> jsonResponse){
+        List<Movie> movies = new ArrayList<>();
         try{
-            ObjectMapper objectMapper = new ObjectMapper();
-            TypeFactory typeFactory = objectMapper.getTypeFactory();
-            JSONObject jsonObject = new JSONObject(jsonResponse);
-
-            return objectMapper.readValue(jsonObject.getJSONArray("results")
-                    .toString(),typeFactory.constructCollectionType(List.class, Movie.class));
+            for(String jsonString : jsonResponse){
+                ObjectMapper objectMapper = new ObjectMapper();
+                TypeFactory typeFactory = objectMapper.getTypeFactory();
+                JSONObject jsonObject = new JSONObject(jsonString);
+                List<Movie> movies1 = objectMapper.readValue(jsonObject.getJSONArray("results")
+                        .toString(),typeFactory.constructCollectionType(List.class, Movie.class));
+                movies.addAll(movies1);
+            }
+            return movies;
         }catch (Exception e){
             return null;
         }
@@ -30,9 +35,6 @@ public class JsonUtils {
             ObjectMapper objectMapper = new ObjectMapper();
             TypeFactory typeFactory = objectMapper.getTypeFactory();
             JSONObject jsonObject = new JSONObject(jsonResponse);
-            String jsonArrayString = jsonObject.getJSONArray("results")
-                    .toString();
-
             return objectMapper.readValue(jsonObject.getJSONArray("results")
                     .toString(),typeFactory.constructCollectionType(List.class, Review.class));
         }catch (Exception e){

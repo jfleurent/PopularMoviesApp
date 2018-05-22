@@ -1,45 +1,20 @@
 package com.example.jeffr.popularmovieapp;
 
-import android.app.SearchManager;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 
-import com.example.jeffr.popularmovieapp.adapters.RecyclerViewOnClick;
-import com.example.jeffr.popularmovieapp.adapters.RecyclerviewAdapter;
 import com.example.jeffr.popularmovieapp.adapters.SectionsPagerAdapter;
-import com.example.jeffr.popularmovieapp.dataobjects.Movie;
-import com.example.jeffr.popularmovieapp.utilities.JsonUtils;
-import com.example.jeffr.popularmovieapp.utilities.NetworkUtils;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import com.example.jeffr.popularmovieapp.data.MovieDBContract;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -97,23 +72,29 @@ public class MainActivity extends AppCompatActivity {
                 bundle = new Bundle();
                 bundle.putString("OrderBy", MovieDBContract.MovieEntry.COLUMN_VOTE_AVERAGE + " DESC");
                 PlaceholderFragment.bundle = bundle;
-                fragmentManager.beginTransaction().detach(PlaceholderFragment.fragments.get(0)).attach(PlaceholderFragment.fragments.get(0)).commit();
-                fragmentManager.beginTransaction().detach(PlaceholderFragment.fragments.get(1)).attach(PlaceholderFragment.fragments.get(1)).commit();
+                fragmentManager.beginTransaction().detach(PlaceholderFragment.fragments
+                        .get(0)).attach(PlaceholderFragment.fragments.get(0)).commit();
+                fragmentManager.beginTransaction().detach(PlaceholderFragment.fragments
+                        .get(1)).attach(PlaceholderFragment.fragments.get(1)).commit();
                 break;
             case R.id.popular:
                 bundle = new Bundle();
                 bundle.putString("OrderBy", MovieDBContract.MovieEntry.COLUMN_POPULARITY + " DESC");
                 PlaceholderFragment.bundle = bundle;
-                fragmentManager.beginTransaction().detach(PlaceholderFragment.fragments.get(0)).attach(PlaceholderFragment.fragments.get(0)).commit();
-                fragmentManager.beginTransaction().detach(PlaceholderFragment.fragments.get(1)).attach(PlaceholderFragment.fragments.get(1)).commit();
+                fragmentManager.beginTransaction().detach(PlaceholderFragment.fragments
+                        .get(0)).attach(PlaceholderFragment.fragments.get(0)).commit();
+                fragmentManager.beginTransaction().detach(PlaceholderFragment.fragments
+                        .get(1)).attach(PlaceholderFragment.fragments.get(1)).commit();
                 break;
             case R.id.favorites:
                 bundle = new Bundle();
                 bundle.putString("OrderBy", MovieDBContract.MovieEntry.COLUMN_FAVORITE + " DESC");
                 bundle.putString("Where", MovieDBContract.MovieEntry.COLUMN_FAVORITE +" = " + 1);
                 PlaceholderFragment.bundle = bundle;
-                fragmentManager.beginTransaction().detach(PlaceholderFragment.fragments.get(0)).attach(PlaceholderFragment.fragments.get(0)).commit();
-                fragmentManager.beginTransaction().detach(PlaceholderFragment.fragments.get(1)).attach(PlaceholderFragment.fragments.get(1)).commit();
+                fragmentManager.beginTransaction().detach(PlaceholderFragment.fragments
+                        .get(0)).attach(PlaceholderFragment.fragments.get(0)).commit();
+                fragmentManager.beginTransaction().detach(PlaceholderFragment.fragments
+                        .get(1)).attach(PlaceholderFragment.fragments.get(1)).commit();
                 break;
         }
         return super.onOptionsItemSelected(item);
