@@ -42,9 +42,15 @@ class FetchTrailer extends AsyncTask<Integer, Void, String> {
         if (result != YouTubeInitializationResult.SUCCESS) {
             result.getErrorDialog(activity, 0).show();
         }
-        if (YouTubeIntents.canResolvePlayVideoIntentWithOptions(context)) {
-            context.startActivity(YouTubeStandalonePlayer.createVideoIntent(activity,
-                    API_KEY2, s, 0, true, true));
+        try {
+            if (YouTubeIntents.canResolvePlayVideoIntentWithOptions(context)) {
+                context.startActivity(YouTubeStandalonePlayer.createVideoIntent(activity,
+                        API_KEY2, s, 0, true, true));
+            }
         }
+        catch (Exception e){
+
+        }
+
     }
 }
